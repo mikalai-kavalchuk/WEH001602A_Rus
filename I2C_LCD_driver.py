@@ -2,8 +2,6 @@
 # Original code found at:
 # https://gist.github.com/DenisFromHR/cc863375a6e19dce359d
 
-# http://www.circuitbasics.com/raspberry-pi-i2c-lcd-set-up-and-programming/
-
 """
 Compiled, mashed and generally mutilated 2014-2015 by Denis Pleic
 Made available under GNU GENERAL PUBLIC LICENSE
@@ -15,16 +13,20 @@ Made available under GNU GENERAL PUBLIC LICENSE
 # By DenisFromHR (Denis Pleic)
 # 2015-02-10, ver 0.1
 
+Modified by Mikalai Kavalchuk
+for work with WEH001602 OLED Displays
+September 2019
 """
 
 # i2c bus (0 -- original Pi, 1 -- Rev 2 Pi)
-I2CBUS = 1
+I2CBUS = 0
 
 # LCD Address
 ADDRESS = 0x27
 
 import smbus
 from time import sleep
+import en_rus_weh001602_table
 
 class i2c_device:
    def __init__(self, addr, port=I2CBUS):
@@ -110,16 +112,27 @@ class lcd:
    def __init__(self):
       self.lcd_device = i2c_device(ADDRESS)
 
-      self.lcd_write(0x03)
-      self.lcd_write(0x03)
-      self.lcd_write(0x03)
-      self.lcd_write(0x02)
+      self.lcd_write(0x33)
+      sleep(0.3)
+      self.lcd_write(0x32)
+      sleep(0.3)
+ 
 
-      self.lcd_write(LCD_FUNCTIONSET | LCD_2LINE | LCD_5x8DOTS | LCD_4BITMODE)
-      self.lcd_write(LCD_DISPLAYCONTROL | LCD_DISPLAYON)
-      self.lcd_write(LCD_CLEARDISPLAY)
-      self.lcd_write(LCD_ENTRYMODESET | LCD_ENTRYLEFT)
+      #self.lcd_write(LCD_FUNCTIONSET | LCD_2LINE | LCD_5x8DOTS | LCD_4BITMODE)
+      self.lcd_write(0x2A)
+      sleep(0.05)
+      #self.lcd_write(LCD_DISPLAYCONTROL | LCD_DISPLAYON)
+      self.lcd_write(0x08)
+      sleep(0.05)
+      self.lcd_write(0x01)
+      sleep(0.1)
+      self.lcd_write(0x06)
+      sleep(0.1)
+      self.lcd_write(0x17)
+      sleep(0.1)
+      self.lcd_write(0x0C)      
       sleep(0.2)
+      
 
 
    # clocks EN to latch command
@@ -157,6 +170,7 @@ class lcd:
 
     self.lcd_write(0x80 + pos_new)
 
+    string = en_rus_weh001602_table.convert(string)
     for char in string:
       self.lcd_write(ord(char), Rs)
 
@@ -177,4 +191,5 @@ class lcd:
       self.lcd_write(0x40);
       for char in fontdata:
          for line in char:
-            self.lcd_write_char(line) 
+            self.lcd_write_char(line)         
+         
