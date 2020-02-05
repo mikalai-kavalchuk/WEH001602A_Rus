@@ -1,4 +1,5 @@
 # Python library for OLED WEH001602A English/Russian
+## Work in progress. Not finished yet
 ### About
 Python library for use OLED Display 1602 (Winstar WEH001602A) with Pi computers and PCF8574 port expander. 
 
